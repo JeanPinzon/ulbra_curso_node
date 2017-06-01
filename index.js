@@ -42,7 +42,6 @@ app.get('/product/:id', (req, res) => {
 app.put('/product/:id', (req, res) => {
   Product.findById(req.params.id, (error, product) => {
     if (error) res.status(500).json({ error: error });
-
     if (!product) res.status(404).json({ error: 'Product not found' })
 
     product.name = req.body.name;
