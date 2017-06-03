@@ -1,22 +1,20 @@
-const express = require('express')
-const bodyParser= require('body-parser')
 const mongoose = require('mongoose');
-const Product = require('./product');
+const bodyParser = require('body-parser');
+const express = require('express')
 const app = express()
 
+const Product = require('./product');
 
 const port = process.env.PORT || 8000;
+
 mongoose.connect('mongodb://ulbra_curso_node:ulbra_curso_node@ds157571.mlab.com:57571/ulbra_curso_node');
 
-
-app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json());
-
 
 app.get('/product', (req, res) => {
   Product.find((error, products) => {
     if (error) res.status(500).json({ error: error });
-    res.json(products);
+    else res.json(products);
   });
 })
 
@@ -35,29 +33,30 @@ app.post('/product', (req, res) => {
 app.get('/product/:id', (req, res) => {
   Product.findById(req.params.id, (error, product) => {
     if (error) res.status(500).json({ error: error });
-    res.json(product);
+    else res.json(product);
   });
 })
 
 app.put('/product/:id', (req, res) => {
   Product.findById(req.params.id, (error, product) => {
     if (error) res.status(500).json({ error: error });
-    if (!product) res.status(404).json({ error: 'Product not found' })
+    else if (!product) res.status(404).json({ error: 'Product not found' })
+    else {
+      product.name = req.body.name;
+      product.value = req.body.value;
 
-    product.name = req.body.name;
-    product.value = req.body.value;
-
-    product.save(error => {
-      if (error) res.json({ error: error });
-      res.json();
-    });
-  });
+      product.save(error => {
+        if (error) res.json({ error: error });
+        else res.json();
+      });
+    }
+  })
 })
 
 app.delete('/product/:id', (req, res) => {
   Product.remove({ _id: req.params.id }, error => {
     if (error) res.json({ error: error });
-    res.json();
+    else res.json();
   });
 })
 
